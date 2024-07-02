@@ -13,9 +13,13 @@ const App = () => {
   const handleSubmitClick = (e) => {
     e.preventDefault();
     
-    console.log(persons)
-    setPersons([...persons, {name: newName}])
-    
+    const duplicates = persons.filter(person => person.name === newName)
+    if (duplicates.length > 0)
+      alert(`${newName} is already added to phonebook`)
+    else
+      setPersons([...persons, {name: newName}])
+
+
   }
 
   return (
