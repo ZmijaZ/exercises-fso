@@ -19,17 +19,19 @@ const Part = ({content}) => {
 }
 
 const Statistics = ({data}) => {
-  
-  return (
-    <>
-      <Part content = {data.content[0]}></Part>
-      <Part content = {data.content[1]}></Part>
-      <Part content = {data.content[2]}></Part>
-      <Part content = {data.content[3]}></Part>
-      <Part content = {data.content[4]}></Part>
-      <Part content = {data.content[5]}></Part>
-    </>
-  )
+  if (data.content[3].count === 0)
+    return <p>No feedback given</p>
+  else
+    return (
+      <>
+        <Part content = {data.content[0]}></Part>
+        <Part content = {data.content[1]}></Part>
+        <Part content = {data.content[2]}></Part>
+        <Part content = {data.content[3]}></Part>
+        <Part content = {data.content[4]}></Part>
+        <Part content = {data.content[5]}></Part>
+      </>
+    )
 }
 
 function App() {
