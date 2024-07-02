@@ -18,7 +18,8 @@ const Part = ({content}) => {
   )
 }
 
-const Content = ({data}) => {
+const Statistics = ({data}) => {
+  
   return (
     <>
       <Part content = {data.content[0]}></Part>
@@ -112,7 +113,7 @@ function App() {
         onClick = {data.buttons[2]} 
         text = {data.content[2].name}/>
       <Header text = {data.headers[1]}/>
-      <Content data= {data}></Content>
+      <Statistics data= {data}></Statistics>
     </div>
 
   )
