@@ -29,14 +29,27 @@ const App = () => {
     setNewNumber(e.target.value)
   }
 
+  //TODO make more smooth
   const handleSubmitClick = (e) => {
     e.preventDefault();
     
+    // const itemURL = `${baseUrl}/${item.id}`
+    let updatedPerson = {}
+    let itemURL = ""
+    const windowMessage = `${newName} is already added to phonebook, replace the old number with the new one?`
+    const newPerson = {name: newName, number: newNumber}
+
     const duplicates = persons.filter(person => person.name === newName)
-    if (duplicates.length > 0)
-      alert(`${newName} is already added to phonebook`)
-    else{
-      const newPerson = {name: newName, number: newNumber}
+    if (duplicates.length > 0){
+      updatedPerson = duplicates[0]
+      if (window.confirm(windowMessage)){
+        itemURL = `${baseUrl}/${updatedPerson.id}`
+        personService
+          .updatePerson(itemURL, newPerson)
+          .then(newPerson => setPersons([...persons, newPerson]))
+        setPersons([...persons, newPerson])
+      } else console.log("Not confirmed")
+    } else{
       personService
         .create(newPerson)
         .then(newPerson => setPersons([...persons, newPerson]))
