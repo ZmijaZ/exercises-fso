@@ -9,9 +9,11 @@ const Header = ({text}) => {
 const Content = ({parts}) => {
   return(
     <div>
-      <Part part = {parts[0]}/>
-      <Part part = {parts[1]}/>
-      <Part part = {parts[2]}/>
+      {parts.map(part => {
+        return(
+          <Part part = {part}></Part>
+        )
+      })}
     </div>
   )
 }
@@ -23,8 +25,9 @@ const Part = ({part}) => {
 }
 
 const Total = ({parts}) => {
+  const values = parts.map(part => part.exercises)
   return (
-    <p>{parts[0].exercises + parts[1].exercises + parts[2].exercises}</p>
+    <strong>total of {values.reduce((acc, curr) => acc + curr, 0)} exercises</strong>
   )
 }
 
@@ -54,6 +57,10 @@ function App() {
       {
         name: 'State of a component',
         exercises: 14
+      },
+      {
+        name: 'Redux',
+        exercises: 11
       }
     ]
   }
