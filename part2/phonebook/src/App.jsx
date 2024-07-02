@@ -51,6 +51,14 @@ const App = () => {
     setPersons(filteredNames)
   }
 
+  const handleDelete = (item) => {
+    const itemURL = `${baseUrl}/${item.id}`
+    if (window.confirm(`Delete ${item.name}?`))
+      personService
+        .deletePerson(itemURL)
+        .then(response => setPersons(persons.filter(person => person.id !== response.id)))
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -69,7 +77,7 @@ const App = () => {
       />
         
       <h2>Numbers</h2>
-      <AllPersons persons = {persons}/>
+      <AllPersons persons = {persons} handleDelete = {handleDelete}/>
     </div>
   )
 }

@@ -10,7 +10,12 @@ const create = (newPerson) =>{
     return axios.post(baseURL, newPerson).then(response => response.data)
 }
 
+const deletePerson = (itemURL) => {
+    return axios.delete(itemURL).then(response => response.data)
+}
+
 export default {
     getAll,
-    create
+    create,
+    deletePerson
 }
