@@ -14,7 +14,9 @@ const Button = (props) => {
 
 const StatisticsLine = ({content}) => {
   return (
-    <p>{content.name} {content.count}</p>
+    <tr>
+      <td>{content.name} {content.count}</td>
+    </tr>
   )
 }
 
@@ -23,14 +25,16 @@ const Statistics = ({data}) => {
     return <p>No feedback given</p>
   else
     return (
-      <>
-        <StatisticsLine content = {data.content[0]}/>
-        <StatisticsLine content = {data.content[1]}/>
-        <StatisticsLine content = {data.content[2]}/>
-        <StatisticsLine content = {data.content[3]}/>
-        <StatisticsLine content = {data.content[4]}/>
-        <StatisticsLine content = {data.content[5]}/>
-      </>
+      <table>
+        <tbody>
+          <StatisticsLine content = {data.content[0]}/>
+          <StatisticsLine content = {data.content[1]}/>
+          <StatisticsLine content = {data.content[2]}/>
+          <StatisticsLine content = {data.content[3]}/>
+          <StatisticsLine content = {data.content[4]}/>
+          <StatisticsLine content = {data.content[5]}/>
+        </tbody>
+      </table>
     )
 }
 
