@@ -33,8 +33,12 @@ const App = () => {
     const duplicates = persons.filter(person => person.name === newName)
     if (duplicates.length > 0)
       alert(`${newName} is already added to phonebook`)
-    else
-      setPersons([...persons, {name: newName, number: newNumber}])
+    else{
+      const newPerson = {name: newName, number: newNumber}
+      axios
+        .post(baseUrl, newPerson)
+        .then(response => setPersons([...persons, response.data]))
+    }
   }
 
   //TODO return values when deleting filtered string
