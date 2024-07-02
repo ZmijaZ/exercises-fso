@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import PersonForm from './components/PersonForm'
 import AllPersons from './components/Person'
 import FilterPersons from './components/FilterPersons'
-import axios from 'axios'
+import personService from '../services/persons.js'
 
 const baseUrl = 'http://localhost:3001/persons'
 
@@ -13,10 +13,12 @@ const App = () => {
   const [filterName, setFilterName] = useState('')
 
   useEffect(() => {
-    axios
-      .get(baseUrl)
-      .then(response => 
-        setPersons(response.data))
+    personService
+      .getAll()
+      .then(persons => {
+        console.log('promise fulfilled')
+        setPersons(persons)
+      })
   }, [])
 
   const handleNameChange = (e) => {
@@ -35,9 +37,9 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
     else{
       const newPerson = {name: newName, number: newNumber}
-      axios
-        .post(baseUrl, newPerson)
-        .then(response => setPersons([...persons, response.data]))
+      personService
+        .create(newPerson)
+        .then(newPerson => setPersons([...persons, newPerson]))
     }
   }
 
