@@ -28,6 +28,14 @@ const Total = ({parts}) => {
   )
 }
 
+const Course = ({course}) => {
+  <div>
+      <Header course = {course.name}/>
+      <Content parts = {course.parts}/>
+      <Total parts = {course.parts}/>
+  </div>
+}
+
 function App() {
   const course = {
     name: 'Half Stack application development',
@@ -48,13 +56,9 @@ function App() {
   }
 
   return (
-    <div>
-      <Header course = {course.name}/>
-      <Content parts = {course.parts}/>
-      <Total parts = {course.parts}/>
-
-      
-    </div>
+    <>
+      <Course course = {course}></Course>
+    </>
   )
 
 }
