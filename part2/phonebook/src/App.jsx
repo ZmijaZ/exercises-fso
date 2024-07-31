@@ -6,14 +6,15 @@ import Notification from './components/Notification'
 import personService from './services/persons'
 import './index.css'
 import Footer from './components/Footer'
+import Error from './components/Error'
 
 function App() {
 
   const showErrorMessage = (message) => {
-    setErrorMessage(
+    setError(
       `${message}`
     )
-    setTimeout(() => setErrorMessage(null), 5000)
+    setTimeout(() => setError(null), 5000)
   }
 
   const showNotification = (message) => {
@@ -29,6 +30,7 @@ function App() {
   const [newPerson, setNewPerson] = useState(emptyPerson)
   const [filter, setFilter] = useState('')
   const [notification, setNotification] = useState(null)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     personService
@@ -38,6 +40,7 @@ function App() {
         showNotification(`Fetched all ${data.length} persons`)
       })
       .catch(error => {
+        showErrorMessage('Failed getting all data')
         console.log('Error when getting data', error)
       })
   }, [])
@@ -56,6 +59,7 @@ function App() {
             showNotification(`${newPerson.name}'s number updated`)
           })
           .catch(error => {
+            showErrorMessage(`Failed updating ${newPerson.name}`)
             console.log("Error when updating", error)
           })
       }
@@ -68,6 +72,7 @@ function App() {
           showNotification(`${newPerson.name} added`)
         })
         .catch(error => {
+          showErrorMessage(`Failed creating ${newPerson.name}`)
           console.log('Error when adding data', error)
         })
     }
@@ -94,7 +99,10 @@ function App() {
           showNotification(`${personToDelete.name} deleted`)
           console.log(response)
         })
-        .catch(error => console.log('Error deleting item', error))
+        .catch(error => {
+          console.log('Error deleting item', error)
+          showErrorMessage(`Failed deleting ${newPerson.name}`)
+        })
     }
   }
 
@@ -103,6 +111,7 @@ function App() {
   return (
     <>
       <h2>Phonebook</h2>
+      <Error message = {error}/>
       <Notification message = {notification}/>
       <Filter filter = {filter} handleFilterChange={handleFilterChange}/>
       <PersonForm newPerson={newPerson} handlePersonChange={handlePersonChange} handleSubmit={handleSubmit}/>
