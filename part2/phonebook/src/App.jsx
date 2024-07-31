@@ -16,6 +16,11 @@ function App() {
     setTimeout(() => setErrorMessage(null), 5000)
   }
 
+  const showNotification = (message) => {
+    setNotification(message)
+    setTimeout(() => setNotification(null), 1000)
+  }
+
   const emptyPerson = ({
     name: '',
     number: ''
@@ -23,14 +28,16 @@ function App() {
   const [persons, setPersons] = useState([]) 
   const [newPerson, setNewPerson] = useState(emptyPerson)
   const [filter, setFilter] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     personService
       .getAll()
-      .then(data => setPersons(data))
+      .then(data => {
+        setPersons(data)
+        showNotification(`Fetched all ${data.length} persons`)
+      })
       .catch(error => {
-        showErrorMessage('Failed getting')
         console.log('Error when getting data', error)
       })
   }, [])
@@ -46,9 +53,9 @@ function App() {
           .then(data => {
             setPersons(persons.map(p => p.id === data.id ? data : p))
             setNewPerson(emptyPerson)
+            showNotification(`${newPerson.name}'s number updated`)
           })
           .catch(error => {
-            showErrorMessage('Failed updating')
             console.log("Error when updating", error)
           })
       }
@@ -58,9 +65,9 @@ function App() {
         .then(data => {
           setPersons([...persons, data])
           setNewPerson(emptyPerson)
+          showNotification(`${newPerson.name} added`)
         })
         .catch(error => {
-          showErrorMessage('Failed creating')
           console.log('Error when adding data', error)
         })
     }
@@ -84,6 +91,7 @@ function App() {
         .deletePerson(personToDelete.id)
         .then(response => {
           setPersons(persons.filter(p => p.id !== personToDelete.id))
+          showNotification(`${personToDelete.name} deleted`)
           console.log(response)
         })
         .catch(error => console.log('Error deleting item', error))
@@ -95,7 +103,7 @@ function App() {
   return (
     <>
       <h2>Phonebook</h2>
-      <Notification message = {errorMessage}/>
+      <Notification message = {notification}/>
       <Filter filter = {filter} handleFilterChange={handleFilterChange}/>
       <PersonForm newPerson={newPerson} handlePersonChange={handlePersonChange} handleSubmit={handleSubmit}/>
       <h2>Numbers</h2>
