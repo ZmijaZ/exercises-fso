@@ -1,20 +1,20 @@
 
 
 const Person = ({person, handleDelete}) => {
-    return(
-      <div>
-        <span>{person.name} {person.number}</span>
-        <button onClick = {() => handleDelete(person)}>delete</button>
-      </div>
-    )
+  return (
+      <>
+          <p>{person.name} {person.number}</p>
+          <button onClick = {e => handleDelete(e, person.number)}>delete</button>
+      </>
+  )
 }
 
-const AllPersons = ({persons, handleDelete}) => {
-    return (
-        <div>
-            {persons.map(person => <Person key = {person.name} person = {person} handleDelete = {handleDelete}/>)}
-        </div>
-    )
+const Persons = ({persons, handleDelete}) => {
+  return (
+      <>
+          {persons.map(p => <Person key = {p.id} person = {p} handleDelete={handleDelete}/>)}
+      </>
+  )
 }
 
-export default AllPersons
+export default Persons

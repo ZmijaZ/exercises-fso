@@ -1,97 +1,107 @@
 import { useEffect, useState } from 'react'
+import Persons from './components/Person'
 import PersonForm from './components/PersonForm'
-import AllPersons from './components/Person'
-import FilterPersons from './components/FilterPersons'
-import personService from '../services/persons.js'
+import Filter from './components/Filter'
+import Notification from './components/Notification'
+import personService from './services/persons'
+import './index.css'
+import Footer from './components/Footer'
 
-const baseUrl = 'http://localhost:3001/persons'
+function App() {
 
-const App = () => {
-  const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState('')
-  const [newNumber, setNewNumber] = useState('')
-  const [filterName, setFilterName] = useState('')
+  const showErrorMessage = (message) => {
+    setErrorMessage(
+      `${message}`
+    )
+    setTimeout(() => setErrorMessage(null), 5000)
+  }
+
+  const emptyPerson = ({
+    name: '',
+    number: ''
+  })
+  const [persons, setPersons] = useState([]) 
+  const [newPerson, setNewPerson] = useState(emptyPerson)
+  const [filter, setFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService
       .getAll()
-      .then(persons => {
-        console.log('promise fulfilled')
-        setPersons(persons)
+      .then(data => setPersons(data))
+      .catch(error => {
+        showErrorMessage('Failed getting')
+        console.log('Error when getting data', error)
       })
   }, [])
 
-  const handleNameChange = (e) => {
-    setNewName(e.target.value)
-  }
-  //TODO use one function only
-  const handleNumberChange = (e) => {
-    setNewNumber(e.target.value)
-  }
-
-  //TODO make more smooth
-  const handleSubmitClick = (e) => {
-    e.preventDefault();
-    
-    // const itemURL = `${baseUrl}/${item.id}`
-    let updatedPerson = {}
-    let itemURL = ""
-    const windowMessage = `${newName} is already added to phonebook, replace the old number with the new one?`
-    const newPerson = {name: newName, number: newNumber}
-
-    const duplicates = persons.filter(person => person.name === newName)
-    if (duplicates.length > 0){
-      updatedPerson = duplicates[0]
-      if (window.confirm(windowMessage)){
-        itemURL = `${baseUrl}/${updatedPerson.id}`
+  const handleSubmit = e => {
+    e.preventDefault()
+    const checkNameExistence = persons.findIndex(p => p.name === newPerson.name)
+    if (checkNameExistence != -1){
+      if(window.confirm(`${newPerson.name} already exists, replace number?`)){
+        console.log(persons[checkNameExistence].id)
         personService
-          .updatePerson(itemURL, newPerson)
-          .then(newPerson => setPersons([...persons, newPerson]))
-        setPersons([...persons, newPerson])
-      } else console.log("Not confirmed")
-    } else{
+          .update(newPerson, persons[checkNameExistence].id)
+          .then(data => {
+            setPersons(persons.map(p => p.id === data.id ? data : p))
+            setNewPerson(emptyPerson)
+          })
+          .catch(error => {
+            showErrorMessage('Failed updating')
+            console.log("Error when updating", error)
+          })
+      }
+    } else {
       personService
         .create(newPerson)
-        .then(newPerson => setPersons([...persons, newPerson]))
+        .then(data => {
+          setPersons([...persons, data])
+          setNewPerson(emptyPerson)
+        })
+        .catch(error => {
+          showErrorMessage('Failed creating')
+          console.log('Error when adding data', error)
+        })
     }
   }
 
-  //TODO return values when deleting filtered string
-  const handleFilterName = (e) => {
-    const currentValue = e.target.value
-    setFilterName(currentValue)
-    const filteredNames = persons.filter(person => person.name.includes(currentValue))
-    setPersons(filteredNames)
+  const handlePersonChange = e => {
+    const {name, value} = e.target
+    setNewPerson({...newPerson, [name]: value})
   }
 
-  const handleDelete = (item) => {
-    const itemURL = `${baseUrl}/${item.id}`
-    if (window.confirm(`Delete ${item.name}?`))
-      personService
-        .deletePerson(itemURL)
-        .then(response => setPersons(persons.filter(person => person.id !== response.id)))
+  const handleFilterChange = e => {
+    setFilter(e.target.value)
+    setPersons(persons.filter(p => p.name.includes(e.target.value)))
   }
+
+  const handleDelete = (e, number) => {
+    e.preventDefault()
+    const personToDelete = persons[persons.findIndex(p => p.number === number)]
+    if(window.confirm(`Delete ${personToDelete.name} ?`)){
+      personService
+        .deletePerson(personToDelete.id)
+        .then(response => {
+          setPersons(persons.filter(p => p.id !== personToDelete.id))
+          console.log(response)
+        })
+        .catch(error => console.log('Error deleting item', error))
+    }
+  }
+
+
 
   return (
-    <div>
+    <>
       <h2>Phonebook</h2>
-      <FilterPersons 
-        filterName = {filterName}
-        changeFilterName = {handleFilterName}
-      />
-      <h2>add a new</h2>
-
-      <PersonForm 
-        name = {newName}
-        number = {newNumber}
-        nameChange = {handleNameChange}
-        numberChange = {handleNumberChange}
-        formSubmit  =  {handleSubmitClick}
-      />
-        
+      <Notification message = {errorMessage}/>
+      <Filter filter = {filter} handleFilterChange={handleFilterChange}/>
+      <PersonForm newPerson={newPerson} handlePersonChange={handlePersonChange} handleSubmit={handleSubmit}/>
       <h2>Numbers</h2>
-      <AllPersons persons = {persons} handleDelete = {handleDelete}/>
-    </div>
+      <Persons persons = {persons} handleDelete={handleDelete}/>
+      <Footer></Footer>
+    </>
   )
 }
 
