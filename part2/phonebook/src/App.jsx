@@ -72,7 +72,8 @@ function App() {
           showNotification(`${newPerson.name} added`)
         })
         .catch(error => {
-          showErrorMessage(`Failed creating ${newPerson.name}`)
+          // showErrorMessage(`Failed creating ${newPerson.name}`)
+          showErrorMessage(error.response.data.error)
           console.log('Error when adding data', error)
         })
     }
